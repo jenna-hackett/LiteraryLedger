@@ -1,20 +1,25 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUserAuth } from "./contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function EntryPage() {
   const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
   const [password, setPassword] = useState("");
   const { login, googleSignIn } = useUserAuth();
   const router = useRouter();
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    const { error } = await login(email, password);
-    if (!error) router.push("/search"); // Send into the app
-  };
+  e.preventDefault();
+  const { error } = await login(email, password);
+  if (!error) {
+    router.push("/search");
+  } else {
+    setError(error);
+  }
+};
 
   return (
     <div className="flex items-center justify-center bg-stone-50 pt-16">
@@ -22,6 +27,12 @@ export default function EntryPage() {
         <h2 className="text-2xl font-serif font-bold text-emerald-900 text-center mb-6">
           Sign in to your Ledger
         </h2>
+
+        {error && (
+          <div className="mb-6 p-3 bg-red-50 text-red-700 text-xs rounded-lg border border-red-100 text-center font-medium animate-pulse">
+            {error}
+          </div>
+  )}
 
         <form onSubmit={handleLogin} className="space-y-4">
           <input 
@@ -50,6 +61,7 @@ export default function EntryPage() {
 
           {/* Google Button */}
           <button 
+            type="button"
             onClick={googleSignIn}
             className="w-full flex items-center justify-center gap-3 border border-stone-200 py-3 rounded-lg hover:bg-stone-50 transition-all font-medium text-stone-700 shadow-sm"
           >
