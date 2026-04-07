@@ -13,7 +13,7 @@ export default function EntryPage() {
   const handleLogin = async (e) => {
     e.preventDefault();
     const { error } = await login(email, password);
-    if (!error) router.push("/search"); // Send them into the app
+    if (!error) router.push("/search"); // Send into the app
   };
 
   return (
