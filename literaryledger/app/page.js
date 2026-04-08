@@ -37,7 +37,7 @@ const handleGoogleLogin = async () => {
 };
 
   return (
-    <div className="flex items-center justify-center bg-stone-50 pt-16">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-stone-50 py-12">
       <div className="max-w-md w-full bg-white p-10 rounded-2xl shadow-xl border border-stone-100">
         <h2 className="text-2xl font-serif font-bold text-emerald-900 text-center mb-6">
           Sign in to your Ledger
