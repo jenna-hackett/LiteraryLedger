@@ -77,7 +77,7 @@ const handleGoogleLogin = async () => {
           {/* Google Button */}
           <button 
             type="button"
-            onClick={googleSignIn}
+            onClick={handleGoogleLogin}
             className="w-full flex items-center justify-center gap-3 border border-stone-200 py-3 rounded-lg hover:bg-stone-50 transition-all font-medium text-stone-700 shadow-sm"
           >
             <svg width="20" height="20" viewBox="0 0 24 24">
