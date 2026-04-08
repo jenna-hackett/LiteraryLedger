@@ -108,9 +108,5 @@ export function AuthContextProvider({ children }) {
 }
 
 export function useUserAuth() {
-  return (
-    <AuthContext.Provider value={{ user, login, logout, signUp, googleSignIn }}>
-      {!loading && children}
-    </AuthContext.Provider>
-  )
+  return useContext(AuthContext);
 }
