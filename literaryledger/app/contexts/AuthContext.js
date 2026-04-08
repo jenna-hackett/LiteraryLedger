@@ -67,7 +67,7 @@ export function AuthContextProvider({ children }) {
 
       const nameParts = user.displayName ? user.displayName.split(" ") : ["User", ""];
       const firstName = nameParts[0];
-      const lastName = name.Parts.length > 1 ? nameParts.slice(1).join(" ") : "";
+      const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
 
       // Create or update user profile in Firestore
       // { merge: true } ensures we don't overwrite existing bios/data
