@@ -12,7 +12,7 @@ export default function RegisterPage() {
   const [lastName, setLastName] = useState("");
   const [error, setError] = useState("");
   
-  const { signUp } = useUserAuth();
+  const { user, signUp } = useUserAuth();
   const router = useRouter();
 
   const handleRegister = async (e) => {

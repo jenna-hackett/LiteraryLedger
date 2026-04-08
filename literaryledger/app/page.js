@@ -8,7 +8,7 @@ export default function EntryPage() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [password, setPassword] = useState("");
-  const { login, googleSignIn } = useUserAuth();
+  const { user, login, googleSignIn } = useUserAuth();
   const router = useRouter();
 
   const handleLogin = async (e) => {
