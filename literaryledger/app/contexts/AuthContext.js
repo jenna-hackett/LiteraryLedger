@@ -37,8 +37,6 @@ export function AuthContextProvider({ children }) {
         firstName,
         lastName,
         email,
-        role: "user", // Changed to user as default
-        createdAt: new Date().toISOString(),
       });
 
       return { user: userCredential.user, error: null };
