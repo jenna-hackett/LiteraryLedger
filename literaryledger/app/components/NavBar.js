@@ -2,9 +2,13 @@
 import Link from "next/link";
 
 export default function NavBar() {
+
+  const { user } = useUserAuth();
+
+  const logoHref = user ? "/home" : "/";
   return (
     <nav className="flex items-center justify-center py-8 bg-stone-50 border-b border-stone-200 shadow-sm">
-      <Link href="/" className="group text-center">
+      <Link href={logoHref} className="group text-center">
         <h1 className="text-3xl font-serif font-bold text-emerald-900 tracking-tight transition group-hover:text-emerald-700">
           The <span className="italic text-emerald-800">Literary</span> Ledger
         </h1>
