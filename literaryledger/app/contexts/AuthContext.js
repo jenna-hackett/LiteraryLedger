@@ -60,21 +60,32 @@ export function AuthContextProvider({ children }) {
   // Google Sign-In
   async function googleSignIn() {
     try {
+
+      googleProvider.setCustomParameters({ prompt: 'select_account' });
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
+
+      const nameParts = user.displayName ? user.displayName.split(" ") : ["User", ""];
+      const firstName = nameParts[0];
+      const lastName = name.Parts.length > 1 ? nameParts.slice(1).join(" ") : "";
 
       // Create or update user profile in Firestore
       // { merge: true } ensures we don't overwrite existing bios/data
       await setDoc(doc(db, "users", user.uid), {
         userId: user.uid,
-        firstName: user.displayName?.split(" ")[0] || "User",
-        lastName: user.displayName?.split(" ")[1] || "",
+        firstName: firstName,
+        lastName: lastName,
         email: user.email,
         role: "user",
+        lastLogin: new Date().toISOString(),
       }, { merge: true });
 
       return { user, error: null };
     } catch (error) {
+      console.error("Google Sign-In Error:", error.code, error.message);
+      if (error.code === 'auth/popup-closed-by-user') {
+        return { user: null, error: "Sign-in cancelled." };
+      }
       return { user: null, error: error.message };
     }
   }
@@ -97,5 +108,9 @@ export function AuthContextProvider({ children }) {
 }
 
 export function useUserAuth() {
-  return useContext(AuthContext);
+  return (
+    <AuthContext.Provider value={{ user, login, logout, signUp, googleSignIn }}>
+      {!loading && children}
+    </AuthContext.Provider>
+  )
 }
