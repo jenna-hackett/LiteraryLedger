@@ -3,9 +3,10 @@ import Link from "next/link";
 
 export default function NavBar() {
 
-  const { user } = useUserAuth();
+  const { user, loading } = useUserAuth();
 
-  const logoHref = user ? "/home" : "/";
+  const logoHref = (!loading && user) ? "/home" : "/";
+  
   return (
     <nav className="flex items-center justify-center py-8 bg-stone-50 border-b border-stone-200 shadow-sm">
       <Link href={logoHref} className="group text-center">
