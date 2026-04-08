@@ -11,12 +11,9 @@ export default function EntryPage() {
   const { login, googleSignIn } = useUserAuth();
   const router = useRouter();
 
-
-  // CHANGE SO THAT WHEN LOG IN SUCCESSFUL, ROUTE TO HOME NOT SEARCH.
-
   // useEffect(() => {
   //   if (user) {
-  //     router.push("/search");
+  //     router.push("/home");
   //   }
   // }, [user, router]);
 
@@ -24,7 +21,7 @@ export default function EntryPage() {
   e.preventDefault();
   const { error } = await login(email, password);
   if (!error) {
-    router.push("/search");
+    router.push("/home");
   } else {
     setError(error);
   }
@@ -33,7 +30,7 @@ export default function EntryPage() {
 const handleGoogleLogin = async () => {
   const { error } = await googleSignIn();
   if (!error) {
-    router.push("/search");
+    router.push("/home");
   } else {
     setError(error);
   }
