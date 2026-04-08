@@ -27,6 +27,15 @@ export default function EntryPage() {
   }
 };
 
+const handleGoogleLogin = async () => {
+  const { error } = await googleSignIn();
+  if (!error) {
+    router.push("/search");
+  } else {
+    setError(error);
+  }
+};
+
   return (
     <div className="flex items-center justify-center bg-stone-50 pt-16">
       <div className="max-w-md w-full bg-white p-10 rounded-2xl shadow-xl border border-stone-100">
