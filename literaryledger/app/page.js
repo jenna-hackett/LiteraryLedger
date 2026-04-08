@@ -11,6 +11,9 @@ export default function EntryPage() {
   const { login, googleSignIn } = useUserAuth();
   const router = useRouter();
 
+
+  // CHANGE SO THAT WHEN LOG IN SUCCESSFUL, ROUTE TO HOME NOT SEARCH.
+
   // useEffect(() => {
   //   if (user) {
   //     router.push("/search");
