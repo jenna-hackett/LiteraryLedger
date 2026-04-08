@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useUserAuth } from "./contexts/AuthContext";
+import { useUserAuth } from "../contexts/AuthContext";
 
 export default function NavBar() {
 
