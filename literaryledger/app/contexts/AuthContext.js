@@ -76,8 +76,6 @@ export function AuthContextProvider({ children }) {
         firstName: firstName,
         lastName: lastName,
         email: user.email,
-        role: "user",
-        lastLogin: new Date().toISOString(),
       }, { merge: true });
 
       return { user, error: null };

@@ -8,8 +8,14 @@ export default function EntryPage() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [password, setPassword] = useState("");
-  const { user, login, googleSignIn } = useUserAuth();
+  const { login, googleSignIn } = useUserAuth();
   const router = useRouter();
+
+  // useEffect(() => {
+  //   if (user) {
+  //     router.push("/search");
+  //   }
+  // }, [user, router]);
 
   const handleLogin = async (e) => {
   e.preventDefault();
