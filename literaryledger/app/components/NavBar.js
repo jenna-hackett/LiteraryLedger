@@ -1,9 +1,10 @@
 "use client";
 import Link from "next/link";
+import { useUserAuth } from "./contexts/AuthContext";
 
 export default function NavBar() {
 
-  const { user, loading } = useUserAuth();
+  const { user, loading } = useUserAuth() || {};
 
   const logoHref = (!loading && user) ? "/home" : "/";
   
