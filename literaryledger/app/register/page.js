@@ -11,6 +11,7 @@ export default function RegisterPage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   
   const { signUp } = useUserAuth();
   const router = useRouter();
@@ -19,17 +20,29 @@ export default function RegisterPage() {
     e.preventDefault();
     setError("");
 
+    // Name Validation 
+    const nameRegex = /^[A-Za-z\s-]+$/;
+
+    if (!nameRegex.test(firstName) || !nameRegex.test(lastName)) {
+      return setError("Names must only contain letters, spaces, or hyphens.");
+    }
+
+    // Password Match Check
     if (password !== confirmPassword) {
       return setError("Passwords do not match.");
     }
 
-    const { error } = await signUp(email, password, firstName, lastName);
-    if (error) {
-      setError(error);
-    } else {
-      router.push("/search"); 
-    }
-  };
+  setLoading(true);
+
+  const { error } = await signUp(email, password, firstName, lastName);
+  
+  if (error) {
+    setError(error);
+    setLoading(false);
+  } else {
+    router.push("/"); 
+  }
+};
 
   return (
     <div className="flex items-center justify-center bg-stone-50 py-12 px-4">
@@ -89,8 +102,15 @@ export default function RegisterPage() {
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
 
-          <button className="w-full bg-emerald-800 text-white font-bold py-3 rounded-lg hover:bg-emerald-900 transition shadow-md mt-2">
-            Create Account
+          <button 
+            disabled={loading}
+            className={`w-full font-bold py-3 rounded-lg transition shadow-md mt-2 ${
+              loading 
+                ? "bg-stone-300 cursor-not-allowed text-stone-500" 
+                : "bg-emerald-800 text-white hover:bg-emerald-900"
+              }`}
+          >
+              {loading ? "Scribing your entry..." : "Create Account"}
           </button>
         </form>
 
