@@ -34,4 +34,4 @@
 
 **Student:** Jenna Hackett
 **Project:** The Literary Ledger
-**Course:** Web Development II – Project Phase 1
+**Course:** Web Development II
