@@ -1,10 +1,7 @@
-// librarian ready to fetch and clean book data from Open Library API
-
+// Librarian ready to fetch and clean book data from Open Library API
 const BASE_URL = "https://openlibrary.org";
 
-/**
- * Searches Open Library by title and returns a cleaned array of books.
- */
+// Searches Open Library by title and returns a cleaned array of books.
 export const searchBooks = async (query, limit = 12) => {
   if (!query) return [];
 
