@@ -34,14 +34,14 @@ export default function Home() {
         {/* User Details */}
         <div className="flex-grow text-center md:text-left">
           <h1 className="text-4xl font-serif font-bold text-emerald-900 mb-2">
-            {user?.displayName || "Anonymous Scholar"}
+            {user?.displayName || "Anonymous Scribe"}
           </h1>
           <p className="text-stone-500 font-serif italic text-sm mb-4">
             Member since {new Date().getFullYear()} • Curator of {user?.ledgerCount || 0} Volumes
           </p>
           <div className="max-w-xl">
             <p className="text-stone-700 font-serif leading-relaxed">
-              {user?.bio || "This scholar has not yet inked their biography. A lover of quiet libraries and the scent of old paper."}
+              {user?.bio || "This scribe has not yet inked their biography. A lover of quiet libraries and the scent of old paper."}
             </p>
           </div>
         </div>
@@ -57,11 +57,11 @@ export default function Home() {
       {/* --- MAIN CONTENT GRID --- */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         
-        {/* LEFT COLUMN: Bookshelves */}
+        {/* LEFT COLUMN: Bookshelf */}
         <div className="lg:col-span-2 space-y-10">
           <section>
             <h3 className="text-xs uppercase tracking-[0.3em] text-stone-400 font-bold mb-6 border-b border-stone-200 pb-2">
-              Currently Scribing
+              Currently Reading
             </h3>
             <div className="bg-[#fdfcf7] border border-stone-300 border-dashed p-12 rounded-lg text-center shadow-sm">
               <p className="text-stone-400 font-serif italic mb-4">The desk is currently empty.</p>
@@ -75,18 +75,18 @@ export default function Home() {
         {/* RIGHT COLUMN: Sidebar */}
         <aside className="space-y-10">
           {/* Stats Section */}
-          <section className="bg-stone-800/5 p-6 rounded-lg border border-stone-300/40">
-            <h3 className="text-xs uppercase tracking-[0.2em] text-emerald-900 font-bold mb-4">
+          <section className="bg-[#fdfcf7] p-6 rounded-lg border border-stone-300 shadow-[2px_2px_0px_rgba(28,46,28,0.05)]">
+            <h3 className="text-xs uppercase tracking-[0.3em] text-emerald-900 font-bold mb-6 border-b border-stone-100 pb-2">
               Ledger Stats
             </h3>
             <div className="space-y-4 font-serif text-sm">
               <div className="flex justify-between border-b border-stone-300/30 pb-2">
                 <span className="text-stone-600">Total Volumes</span>
-                <span className="font-bold">0</span>
+                <span className="font-bold text-emerald-900">0</span>
               </div>
               <div className="flex justify-between border-b border-stone-300/30 pb-2">
                 <span className="text-stone-600">Active Friends</span>
-                <span className="font-bold">0</span>
+                <span className="font-bold text-emerald-900">0</span>
               </div>
             </div>
           </section>
