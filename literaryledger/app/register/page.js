@@ -45,17 +45,17 @@ export default function RegisterPage() {
 };
 
   return (
-    <div className="flex items-center justify-center bg-stone-50 py-12 px-4">
-      <div className="max-w-md w-full bg-white p-10 rounded-2xl shadow-xl border border-stone-100">
-        <h2 className="text-2xl font-serif font-bold text-emerald-900 text-center mb-2">
+    <div className="flex items-center justify-center min-h-screen py-12 px-4">
+      <div className="max-w-md w-full bg-[#fdfcf7] p-10 rounded-lg shadow-[4px_4px_0px_rgba(28,46,28,0.1)] border border-stone-300">
+        <h2 className="text-3xl font-serif font-bold text-emerald-900 text-center mb-2">
           Join the Ledger
         </h2>
-        <p className="text-stone-500 text-sm text-center mb-8 italic">
-          Start your personal reading archive today.
+        <p className="text-stone-500 text-sm text-center mb-8 italic font-serif">
+          Scribe your name to begin your personal archive.
         </p>
 
         {error && (
-          <p className="mb-4 p-3 bg-red-50 text-red-600 text-xs rounded-lg border border-red-100 text-center font-medium">
+          <p className="mb-4 p-3 bg-red-900/5 text-red-700 text-xs rounded border border-red-200/50 text-center font-serif italic">
             {error}
           </p>
         )}
@@ -66,14 +66,14 @@ export default function RegisterPage() {
               type="text" 
               placeholder="First Name"
               required
-              className="w-full px-4 py-3 rounded-lg border border-stone-200 focus:ring-2 focus:ring-emerald-800 outline-none text-stone-900 placeholder-stone-400 bg-stone-50/50"
+              className="w-full px-4 py-3 rounded border border-stone-300/60 focus:border-emerald-800 outline-none text-stone-900 placeholder-stone-400 bg-stone-800/5 font-serif"
               onChange={(e) => setFirstName(e.target.value)}
             />
             <input 
               type="text" 
               placeholder="Last Name"
               required
-              className="w-full px-4 py-3 rounded-lg border border-stone-200 focus:ring-2 focus:ring-emerald-800 outline-none text-stone-900 placeholder-stone-400 bg-stone-50/50"
+              className="w-full px-4 py-3 rounded border border-stone-300/60 focus:border-emerald-800 outline-none text-stone-900 placeholder-stone-400 bg-stone-800/5 font-serif"
               onChange={(e) => setLastName(e.target.value)}
             />
           </div>
@@ -82,7 +82,7 @@ export default function RegisterPage() {
             type="email" 
             placeholder="Email"
             required
-            className="w-full px-4 py-3 rounded-lg border border-stone-200 focus:ring-2 focus:ring-emerald-800 outline-none text-stone-900 placeholder-stone-400 bg-stone-50/50"
+            className="w-full px-4 py-3 rounded border border-stone-300/60 focus:border-emerald-800 outline-none text-stone-900 placeholder-stone-400 bg-stone-800/5 font-serif"
             onChange={(e) => setEmail(e.target.value)}
           />
 
@@ -90,7 +90,7 @@ export default function RegisterPage() {
             type="password" 
             placeholder="Password"
             required
-            className="w-full px-4 py-3 rounded-lg border border-stone-200 focus:ring-2 focus:ring-emerald-800 outline-none text-stone-900 placeholder-stone-400 bg-stone-50/50"
+            className="w-full px-4 py-3 rounded border border-stone-300/60 focus:border-emerald-800 outline-none text-stone-900 placeholder-stone-400 bg-stone-800/5 font-serif"
             onChange={(e) => setPassword(e.target.value)}
           />
 
@@ -98,26 +98,26 @@ export default function RegisterPage() {
             type="password" 
             placeholder="Confirm Password"
             required
-            className="w-full px-4 py-3 rounded-lg border border-stone-200 focus:ring-2 focus:ring-emerald-800 outline-none text-stone-900 placeholder-stone-400 bg-stone-50/50"
+            className="w-full px-4 py-3 rounded border border-stone-300/60 focus:border-emerald-800 outline-none text-stone-900 placeholder-stone-400 bg-stone-800/5 font-serif"
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
 
           <button 
             disabled={loading}
-            className={`w-full font-bold py-3 rounded-lg transition shadow-md mt-2 ${
+            className={`w-full font-serif tracking-widest uppercase text-xs py-4 rounded transition-all shadow-md mt-2 ${
               loading 
                 ? "bg-stone-300 cursor-not-allowed text-stone-500" 
-                : "bg-emerald-800 text-white hover:bg-emerald-900"
+                : "bg-emerald-900 text-white hover:bg-emerald-800"
               }`}
           >
               {loading ? "Scribing your entry..." : "Create Account"}
           </button>
         </form>
 
-        <div className="mt-8 pt-6 border-t border-stone-100 text-center">
-          <p className="text-stone-600 text-sm">
+        <div className="mt-8 pt-6 border-t border-stone-200 text-center">
+          <p className="text-stone-600 text-sm font-serif">
             Already have an account?{" "}
-            <Link href="/" className="text-emerald-800 font-bold hover:underline">
+            <Link href="/" className="text-emerald-900 font-bold hover:underline">
               Sign in here
             </Link>
           </p>

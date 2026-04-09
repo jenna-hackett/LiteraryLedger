@@ -23,12 +23,12 @@ export default function BookDetailsPage() {
   if (!book) return <div className="p-20 text-center">Book not found.</div>;
 
   return (
-  <div className="min-h-screen bg-stone-50">
-    {/* Back to Search Navigation */}
+  <div className="min-h-screen bg-transparent">
+    
     <nav className="p-6">
       <button 
         onClick={() => router.back()} 
-        className="text-stone-400 hover:text-emerald-900 font-serif italic text-sm transition-colors"
+        className="text-stone-500 hover:text-emerald-900 font-serif italic text-sm transition-colors"
       >
         ← Back to Search
       </button>
@@ -39,15 +39,15 @@ export default function BookDetailsPage() {
         
         {/* Left Side: Cover Image */}
         <div className="w-full md:w-1/3 sticky top-10">
-          <div className="bg-stone-200 p-1 rounded-sm shadow-sm">
+          <div className="bg-stone-800/5 p-1 rounded-sm shadow-sm">
             {book.coverUrl ? (
               <img 
                 src={book.coverUrl} 
                 alt={book.title} 
-                className="w-full h-auto object-contain"
+                className="w-full h-auto object-contain shadow-md" 
               />
             ) : (
-              <div className="aspect-[3/4] flex items-center justify-center bg-stone-100 text-stone-400 font-serif italic">
+              <div className="aspect-[3/4] flex items-center justify-center bg-stone-800/5 text-stone-500 font-serif italic border border-stone-300/30">
                 Image Missing
               </div>
             )}
@@ -59,15 +59,16 @@ export default function BookDetailsPage() {
         </div>
 
         {/* Right Side: Description */}
-        <div className="w-full md:w-2/3 border-l border-stone-200 pl-0 md:pl-16">
+        <div className="w-full md:w-2/3 border-l border-stone-300/60 pl-0 md:pl-16">
           <header className="mb-10">
             <h1 className="text-5xl font-serif font-bold text-emerald-900 mb-2 leading-tight">
               {book.title}
             </h1>
+            <p className="text-stone-500 italic font-serif text-sm">Official Ledger Record</p>
           </header>
 
           <section className="mb-12">
-            <h3 className="text-xs uppercase tracking-[0.2em] text-stone-400 font-bold mb-6 border-b border-stone-100 pb-2">
+            <h3 className="text-xs uppercase tracking-[0.2em] text-stone-400 font-bold mb-6 border-b border-stone-300/60 pb-2">
               Synopsis
             </h3>
             <p className="text-stone-800 leading-relaxed font-serif text-lg whitespace-pre-line">
