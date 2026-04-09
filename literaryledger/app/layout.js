@@ -25,11 +25,9 @@ export default function RootLayout({ children }) {
         <AuthContextProvider>
           {/* The NavBar stays on top of every page */}
           <NavBar />
-          {/* 'children' represent whichever page the user is currently on */}
           <main className="min-h-screen">
             {children}
           </main>
-          {/* Add Footer here later??? */}
         </AuthContextProvider>
       </body>
     </html>
