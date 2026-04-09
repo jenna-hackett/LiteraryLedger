@@ -6,7 +6,7 @@ export const searchUsers = async (searchText) => {
   
   try {
     const usersRef = collection(db, "users");
-    // This finds users whose email or name exactly matches or starts with the text
+    // Finds users whose email or name exactly matches or starts with the text
     const q = query(
       usersRef, 
       where("email", ">=", searchText),
