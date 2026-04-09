@@ -27,7 +27,7 @@ export default function BookDetailsPage() {
     {/* Back to Search Navigation */}
     <nav className="p-6">
       <button 
-        onClick={() => router.back()} // This now goes back to /search?q=harry+potter
+        onClick={() => router.back()}
         className="text-stone-400 hover:text-emerald-900 font-serif italic text-sm transition-colors"
       >
         ← Back to Search Results
