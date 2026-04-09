@@ -26,24 +26,28 @@ export function AuthContextProvider({ children }) {
   }, []);
 
   // Email/Password Sign Up
-  async function signUp(email, password, firstName, lastName) {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const uid = userCredential.user.uid;
+async function signUp(email, password, firstName, lastName) {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const uid = userCredential.user.uid;
 
-      // Create user profile in Firestore
-      await setDoc(doc(db, "users", uid), {
-        userId: uid,
-        firstName,
-        lastName,
-        email,
-      });
+    // Create user profile in Firestore
+    await setDoc(doc(db, "users", uid), {
+      userId: uid,
+      firstName,
+      lastName,
+      email,
+    });
 
-      return { user: userCredential.user, error: null };
-    } catch (error) {
-      return { user: null, error: error.message };
-    }
+    // Force a logout so they aren't auto-logged in after registration
+    await firebaseSignOut(auth);
+
+    // Return null for the user so the Register page knows to redirect to Login
+    return { user: null, error: null };
+  } catch (error) {
+    return { user: null, error: error.message };
   }
+}
 
   // Email/Password Login
   async function login(email, password) {
