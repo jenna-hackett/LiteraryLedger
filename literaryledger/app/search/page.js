@@ -1,47 +1,31 @@
 "use client";
-import { useState, useEffect } from "react"; // Combined imports
+import { useState } from "react";
 import { searchBooks } from "../_services/openLibrary";
 import { searchUsers } from "../_services/dbActions";
 import Link from "next/link";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function SearchPage() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  
-  const urlQuery = searchParams.get("q") || "";
-  
-  const [query, setQuery] = useState(urlQuery);
+  const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [searchMode, setSearchMode] = useState("books"); 
   const [loading, setLoading] = useState(false);
 
-  const handleSearch = async (e, forcedQuery = null) => {
+  const handleSearch = async (e) => {
     if (e) e.preventDefault();
-    const searchQuery = forcedQuery || query;
-    if (!searchQuery) return;
+    if (!query) return;
 
     setLoading(true);
     
-    // Update the URL
-    router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
-
     if (searchMode === "books") {
-      const data = await searchBooks(searchQuery);
+      const data = await searchBooks(query);
       setResults(data);
     } else {
-      const data = await searchUsers(searchQuery);
+      const data = await searchUsers(query);
       setResults(data);
     }
     setLoading(false);
   };
-
-  useEffect(() => {
-    if (urlQuery) {
-      handleSearch(null, urlQuery);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [urlQuery]);
 
   return (
     <div className="min-h-screen bg-stone-50 py-12 px-4">
