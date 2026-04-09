@@ -11,7 +11,7 @@ export const searchBooks = async (query, limit = 12) => {
     );
 
     if (!response.ok) {
-      throw new Error("The library archives are currently unreachable.");
+      throw new Error("The ledger is currently unreachable.");
     }
 
     const data = await response.json();
@@ -30,5 +30,41 @@ export const searchBooks = async (query, limit = 12) => {
   } catch (error) {
     console.error("Librarian Error:", error);
     return [];
+  }
+};
+
+export const getBookDetails = async (bookId) => {
+  try {
+    const response = await fetch(`${BASE_URL}/works/${bookId}.json`);
+    if (!response.ok) throw new Error("Could not find book details");
+    
+    const data = await response.json();
+
+    let rawDescription = "No description available in the archives.";
+    if (data.description) {
+      rawDescription = typeof data.description === 'string' 
+        ? data.description 
+        : data.description.value;
+    }
+
+    const cleanDescription = rawDescription
+      .replace(/https?:\/\/[^\s]+/g, '')        // Removes URLs
+      .replace(/\[.*?\]/g, '')                  // Removes square brackets
+      .replace(/\(.*?\)/g, '')                  // Removes parentheses
+      .replace(/\*\*(.*?)\*\*/g, '')            // Removes Markdown bolding like **Contains**
+      .replace(/^[ \t]*[-:]([ \t]*[-:])*/gm, '') // Removes lines starting with - or : or combinations
+      .replace(/-{2,}/g, '')                    // Removes long dashes -----
+      .split(/See also:/i)[0]                   // Cuts off "See also" sections
+      .trim();                                  // Final trim
+
+    return {
+      title: data.title,
+      description: cleanDescription,
+      subjects: data.subjects ? data.subjects.slice(0, 5) : [],
+      coverUrl: data.covers ? `https://covers.openlibrary.org/b/id/${data.covers[0]}-L.jpg` : null,
+    };
+  } catch (error) {
+    console.error("Detail Fetch Error:", error);
+    return null;
   }
 };
