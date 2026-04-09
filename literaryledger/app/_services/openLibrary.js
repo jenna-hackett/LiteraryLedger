@@ -48,13 +48,15 @@ export const getBookDetails = async (bookId) => {
     }
 
     const cleanDescription = rawDescription
-      .replace(/https?:\/\/[^\s]+/g, '')        // Removes URLs
-      .replace(/\[.*?\]/g, '')                  // Removes square brackets
-      .replace(/\(.*?\)/g, '')                  // Removes parentheses
-      .replace(/\*\*(.*?)\*\*/g, '')            // Removes Markdown bolding like **Contains**
-      .replace(/^[ \t]*[-:]([ \t]*[-:])*/gm, '') // Removes lines starting with - or : or combinations
-      .replace(/-{2,}/g, '')                    // Removes long dashes -----
-      .split(/See also:/i)[0]                   // Cuts off "See also" sections
+      .replace(/https?:\/\/[^\s]+/g, '')        // URLs
+      .replace(/\[.*?\]/g, '')                  // Full square brackets
+      .replace(/\(.*?\)/g, '')                  // Full parentheses
+      .replace(/\*\*(.*?)\*\*/g, '')            // Markdown Bold
+      .replace(/[\[\]\(\)]{2,}/g, '')           // Stray fragments like ][( or ))
+      .replace(/^[ \t]*[-:]([ \t]*[-:])*/gm, '') // Leading dashes/colons
+      .replace(/-{2,}/g, '')                    // Long dashes
+      .split(/See also:/i)[0]                   // Cut "See also"
+      .replace(/\n{3,}/g, '\n\n')               // Collapse big gaps
       .trim();                                  // Final trim
 
     return {
