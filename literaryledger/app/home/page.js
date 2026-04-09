@@ -35,7 +35,7 @@ export default function Home() {
                   href="/search" 
                   className="inline-block px-6 py-2 bg-emerald-900 text-white text-[10px] uppercase tracking-widest font-bold rounded hover:bg-emerald-800 transition-all"
                 >
-                  Visit the Stacks (Search)
+                  Search the Stacks
                 </Link>
               </div>
             </section>
@@ -54,7 +54,7 @@ export default function Home() {
           <aside className="space-y-10">
             <section className="bg-stone-800/5 p-6 rounded-lg border border-stone-300/40">
               <h3 className="text-xs uppercase tracking-[0.2em] text-emerald-900 font-bold mb-4">
-                Ledger Stats
+                Archive Stats
               </h3>
               <div className="space-y-4 font-serif">
                 <div className="flex justify-between border-b border-stone-300/30 pb-2">
