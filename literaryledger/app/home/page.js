@@ -2,7 +2,7 @@
 import { useUserAuth } from "../contexts/AuthContext";
 import Link from "next/link";
 import { useEffect } from "react";
-import { router } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const { user, loading } = useUserAuth();
@@ -17,7 +17,7 @@ export default function Home() {
 
   if (loading) return <div className="p-20 text-center italic text-stone-500">Consulting the Ledger...</div>;
   if (!user) return null;
-  
+
   return (
   <div className="min-h-screen bg-transparent py-12 px-6">
     <div className="max-w-6xl mx-auto">
