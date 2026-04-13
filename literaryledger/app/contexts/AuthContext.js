@@ -9,12 +9,14 @@ import {
 } from "firebase/auth";
 import { auth, db, googleProvider } from "@/app/utils/firebase";
 import { doc, setDoc } from "firebase/firestore";
+import { useRouter } from "next/navigation";
 
 const AuthContext = createContext();
 
 export function AuthContextProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   // Monitor auth state changes
   useEffect(() => {
@@ -94,8 +96,11 @@ async function signUp(email, password, firstName, lastName) {
   async function logout() {
     try {
       await firebaseSignOut(auth);
+
+      router.push("/");
       return { error: null };
     } catch (error) {
+      console.error("Logout Failed:", error.code, error.message);
       return { error: error.message };
     }
   }

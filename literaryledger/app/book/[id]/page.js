@@ -19,7 +19,7 @@ export default function BookDetailsPage() {
     loadBook();
   }, [id]);
 
-  if (loading) return <div className="p-20 text-center italic text-stone-500">Unlocking the vault...</div>;
+  if (loading) return <div className="p-20 text-center italic text-stone-500">Unlocking the archives...</div>;
   if (!book) return <div className="p-20 text-center">Book not found.</div>;
 
   return (
