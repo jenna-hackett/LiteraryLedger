@@ -4,39 +4,82 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { updateUserProfile } from "../_services/dbActions";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../utils/firebase";
 
 export default function Home() {
-  const { user, loading } = useUserAuth();
+  const { user, loading: authLoading } = useUserAuth();
   const router = useRouter();
 
+  // States
+  const [profileData, setProfileData] = useState(null);
+  const [dbLoading, setDbLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editData, setEditData] = useState({
-    firstName: user?.displayName?.split(" ")[0] || "",
-    lastName: user?.displayName?.split(" ")[1] || "",
-    bio: user?.bio || ""
-  });
+  firstName: "",
+  lastName: "",
+  bio: "",
+  photoURL: ""
+});
 
   const handleSaveProfile = async () => {
     setSaving(true);
-    const result = await updateUserProfile(user.uid, editData);
-    if (result.success) {
-      setIsEditing(false);
-      // In a real app, you'd trigger an auth refresh here, 
-      // but for now, a manual refresh will show the new data.
-      window.location.reload(); 
+    try {
+      const result = await updateUserProfile(user.uid, {
+        firstName: editData.firstName,
+        lastName: editData.lastName,
+        bio: editData.bio,
+        photoURL: editData.photoURL
+      });
+      
+      if (result.success) {
+        setIsEditing(false);
+        // Refresh to show the Librarian the new data
+        window.location.reload(); 
+      } else {
+        alert("The archive failed to save: " + result.error);
+      }
+    } catch (error) {
+      console.error("Failed to save profile:", error);
     }
     setSaving(false);
   };
 
+  // Security Guard: If auth state is done loading and there's no user, redirect to login
   useEffect(() => {
-    // If the check is done and no user exists, kick them to login
-    if (!loading && !user) {
+    if (!authLoading && !user) {
       router.push("/");
     }
-  }, [user, loading, router]);
+  }, [user, authLoading, router]);
 
-  if (loading) return <div className="p-20 text-center italic text-stone-500">Consulting the Ledger...</div>;
+  // Librarian: Fetch the user's profile data from Firestore when they log in
+  useEffect(() => {
+    async function fetchProfile() {
+      if (user?.uid) {
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setProfileData(data);
+          setEditData({
+            firstName: data.firstName || "",
+            lastName: data.lastName || "",
+            bio: data.bio || "",
+            photoURL: data.photoURL || ""
+          });
+        }
+        setDbLoading(false);
+      }
+    }
+    if (!authLoading && user) fetchProfile();
+  }, [user, authLoading]);
+
+  if (authLoading || (user && dbLoading)) {
+    return <div className="p-20 text-center italic text-stone-500 font-serif">Consulting the Ledger...</div>;
+  }
+
   if (!user) return null;
 
   return (
@@ -46,28 +89,30 @@ export default function Home() {
       {/* --- DYNAMIC PROFILE SECTION --- */}
       <header className="mb-16 bg-[#fdfcf7] border border-stone-300 rounded-lg p-8 shadow-[4px_4px_0px_rgba(28,46,28,0.1)]">
         {!isEditing ? (
-          /* VIEW MODE */
+          /* VIEW MODE: Drawing from profileData */
           <div className="flex flex-col md:flex-row items-center gap-10">
             <div className="w-32 h-32 rounded-full border-4 border-stone-200 overflow-hidden bg-emerald-900/5 flex items-center justify-center shadow-inner">
-              {user?.photoURL ? (
-                <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" />
+              {profileData?.photoURL ? (
+                <img src={profileData.photoURL} alt="Profile" className="w-full h-full object-cover" />
               ) : (
                 <span className="text-4xl font-serif font-bold text-emerald-900 uppercase">
-                  {user?.displayName ? user.displayName[0] : "S"}
+                  {profileData?.firstName ? profileData.firstName[0] : (user?.displayName ? user.displayName[0] : "S")}
                 </span>
               )}
             </div>
 
             <div className="flex-grow text-center md:text-left">
               <h1 className="text-4xl font-serif font-bold text-emerald-900 mb-2">
-                {user?.displayName || "Anonymous Scribe"}
+                {profileData?.firstName 
+                  ? `${profileData.firstName} ${profileData.lastName}` 
+                  : (user?.displayName || "Anonymous Scribe")}
               </h1>
               <p className="text-stone-500 font-serif italic text-sm mb-4">
                 Member since {new Date().getFullYear()} • Curator of {user?.ledgerCount || 0} Volumes
               </p>
               <div className="max-w-xl">
                 <p className="text-stone-700 font-serif leading-relaxed italic">
-                  {user?.bio || "This scribe has not yet inked their biography. A lover of quiet libraries and the scent of old paper."}
+                  &quot;{profileData?.bio || "This scribe has not yet inked their biography. A lover of quiet libraries and the scent of old paper."}&quot;
                 </p>
               </div>
               <button 
@@ -88,9 +133,9 @@ export default function Home() {
             </div>
           </div>
         ) : (
-          /* EDIT MODE */
+          /* EDIT MODE: URL Method Version */
           <div className="space-y-6">
-            <h2 className="font-serif text-2xl text-emerald-900 font-bold border-b border-stone-200 pb-2">Edit Archive</h2>
+            <h2 className="font-serif text-2xl text-emerald-900 font-bold border-b border-stone-200 pb-2">Update Your Entry</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
@@ -113,6 +158,18 @@ export default function Home() {
               </div>
             </div>
 
+            {/* PORTRAIT URL INPUT */}
+            <div className="space-y-2">
+              <label className="text-[10px] uppercase tracking-widest text-stone-400 font-bold">Portrait URL (Image Link)</label>
+              <input 
+                type="text"
+                value={editData.photoURL}
+                onChange={(e) => setEditData({...editData, photoURL: e.target.value})}
+                placeholder="https://example.com/your-photo.jpg"
+                className="w-full p-3 rounded border border-stone-300 bg-stone-800/5 font-serif outline-none focus:border-emerald-800"
+              />
+            </div>
+
             <div className="space-y-2">
               <label className="text-[10px] uppercase tracking-widest text-stone-400 font-bold">Scribe&apos;s Biography</label>
               <textarea 
@@ -120,7 +177,7 @@ export default function Home() {
                 value={editData.bio}
                 onChange={(e) => setEditData({...editData, bio: e.target.value})}
                 className="w-full p-3 rounded border border-stone-300 bg-stone-800/5 font-serif outline-none focus:border-emerald-800"
-                placeholder="Let other scribes know a bit about you. Your favorite genres, authors, or a literary quote that inspires you."
+                placeholder="Tell other scribes about your literary tastes, favorite genres, or the last great book you read."
               />
             </div>
 
@@ -143,7 +200,7 @@ export default function Home() {
         )}
       </header>
 
-      {/* --- MAIN CONTENT --- */}
+      {/* --- MAIN CONTENT GRID --- */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         
         {/* LEFT COLUMN: Bookshelf */}
@@ -153,7 +210,7 @@ export default function Home() {
               Currently Reading
             </h3>
             <div className="bg-[#fdfcf7] border border-stone-300 border-dashed p-12 rounded-lg text-center shadow-sm">
-              <p className="text-stone-400 font-serif italic mb-4">The desk is currently empty.</p>
+              <p className="text-stone-400 font-serif italic mb-4">The shelf is currently empty.</p>
               <Link href="/search" className="inline-block px-6 py-2 bg-emerald-900 text-white text-[10px] uppercase tracking-widest font-bold rounded hover:bg-emerald-800 transition-all">
                 Search the Stacks
               </Link>
@@ -174,7 +231,7 @@ export default function Home() {
                 <span className="font-bold text-emerald-900">0</span>
               </div>
               <div className="flex justify-between border-b border-stone-300/30 pb-2">
-                <span className="text-stone-600">Active Friends</span>
+                <span className="text-stone-600">Active Scribes</span>
                 <span className="font-bold text-emerald-900">0</span>
               </div>
             </div>
@@ -186,7 +243,7 @@ export default function Home() {
               Recent Scribe Activity
             </h3>
             <p className="text-[11px] text-stone-400 italic font-serif mt-4 border-t border-stone-100 pt-4">
-              Visit the <Link href="/search" className="text-emerald-800 hover:underline">Stacks</Link> to find other readers.
+              Visit the <Link href="/search" className="text-emerald-800 hover:underline">Stacks</Link> to find other scribes.
             </p>
           </section>
         </aside>
