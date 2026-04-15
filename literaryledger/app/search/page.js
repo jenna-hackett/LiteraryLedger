@@ -1,11 +1,13 @@
 "use client";
 import { useState } from "react";
 import { searchBooks } from "../_services/openLibrary";
-import { searchUsers } from "../_services/dbActions";
+import { searchUsers, followUser } from "../_services/dbActions";
+import { useUserAuth } from "../contexts/AuthContext";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function SearchPage() {
+  const { user } = useUserAuth();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [searchMode, setSearchMode] = useState("books"); 
@@ -22,13 +24,28 @@ export default function SearchPage() {
       setResults(data);
     } else {
       const data = await searchUsers(query);
-      setResults(data);
+      // Filter out the current user so you don't find yourself in the archives
+      setResults(data.filter(u => u.id !== user?.uid));
     }
     setLoading(false);
   };
 
+  const handleFollowScribe = async (targetId, targetName) => {
+    if (!user) {
+      alert("You must be logged in to follow other scribes!");
+      return;
+    }
+
+    const result = await followUser(user.uid, targetId);
+    if (result.success) {
+      alert(`${targetName} has been added to your circle of scribes.`);
+    } else {
+      alert("The archive failed to update: " + result.error);
+    }
+  };
+
   return (
-    <div className="min-h-screen py-12 px-4">
+    <div className="min-h-screen py-12 px-4 bg-transparent">
       <div className="max-w-4xl mx-auto">
         
         {/* Tab Switcher */}
@@ -51,7 +68,7 @@ export default function SearchPage() {
                 : 'bg-[#fdfcf7] border-stone-300 text-stone-600 hover:border-emerald-800 shadow-sm'
             }`}
           >
-            Find Readers
+            Find Scribes
           </button>
         </div>
 
@@ -66,8 +83,11 @@ export default function SearchPage() {
                        shadow-[4px_4px_0px_rgba(28,46,28,0.07)] transition-all"
             onChange={(e) => setQuery(e.target.value)}
           />
-          <button className="absolute right-4 top-1/2 -translate-y-1/2 bg-emerald-900 text-white px-8 py-3 rounded-xl hover:bg-emerald-800 transition-colors shadow-md uppercase text-xs tracking-widest font-bold">
-            Search
+          <button 
+            type="submit"
+            className="absolute right-4 top-1/2 -translate-y-1/2 bg-emerald-900 text-white px-8 py-3 rounded-xl hover:bg-emerald-800 transition-colors shadow-md uppercase text-xs tracking-widest font-bold"
+          >
+            {loading ? "..." : "Search"}
           </button>
         </form>
 
@@ -85,6 +105,7 @@ export default function SearchPage() {
                            hover:shadow-[4px_4px_0px_rgba(28,46,28,0.1)]"
               >
                 {searchMode === 'books' ? (
+                  /* BOOK RESULT UI */
                   <>
                     <div className="relative aspect-[3/4] mb-4 overflow-hidden rounded-lg bg-stone-800/5 flex items-center justify-center border border-stone-200/50">
                       {item.coverUrl ? (
@@ -110,22 +131,35 @@ export default function SearchPage() {
                     <Link 
                       href={`/book/${item.bookId}`} 
                       className="mt-6 w-full py-2 bg-emerald-900/5 hover:bg-emerald-900 text-emerald-900 hover:text-white 
-                                text-xs uppercase tracking-[0.2em] font-bold rounded border border-emerald-900/20 
-                                transition-all text-center"
+                                 text-xs uppercase tracking-[0.2em] font-bold rounded border border-emerald-900/20 
+                                 transition-all text-center"
                     >
                       View Details
                     </Link>
                   </>
                 ) : (
-                  <div className="py-8 text-center">
-                    <div className="w-20 h-20 bg-emerald-900/10 text-emerald-900 rounded-full mx-auto mb-4 flex items-center justify-center font-bold text-2xl uppercase border border-emerald-900/20 shadow-inner">
-                      {item.firstName ? item.firstName[0] : "?"}
+                  /* READER RESULT UI */
+                  <div className="py-8 text-center flex flex-col h-full">
+                    <div className="w-20 h-20 bg-emerald-900/10 text-emerald-900 rounded-full mx-auto mb-4 flex items-center justify-center font-bold text-2xl uppercase border border-emerald-900/20 shadow-inner overflow-hidden">
+                      {item.photoURL ? (
+                        <img src={item.photoURL} alt={item.firstName} className="w-full h-full object-cover" />
+                      ) : (
+                        item.firstName ? item.firstName[0] : "?"
+                      )}
                     </div>
-                    <h3 className="font-serif font-bold text-emerald-900 text-xl">
-                      {item.firstName} {item.lastName}
-                    </h3>
-                    <button className="mt-6 px-6 py-2 bg-emerald-900 text-white text-[10px] uppercase tracking-widest font-bold rounded-full hover:bg-emerald-800 transition-all shadow-md">
-                      Add Friend +
+                    
+                    <div className="flex-grow">
+                      <h3 className="font-serif font-bold text-emerald-900 text-xl">
+                        {item.firstName} {item.lastName}
+                      </h3>
+                      <p className="text-stone-500 text-xs italic font-serif mt-1">{item.email}</p>
+                    </div>
+
+                    <button 
+                      onClick={() => handleFollowScribe(item.id, item.firstName)}
+                      className="mt-6 px-6 py-2 bg-emerald-900 text-white text-[10px] uppercase tracking-widest font-bold rounded-full hover:bg-emerald-800 transition-all shadow-md active:scale-95"
+                    >
+                      Follow Scribe +
                     </button>
                   </div>
                 )}
@@ -133,6 +167,13 @@ export default function SearchPage() {
             ))
           )}
         </div>
+
+        {/* Empty State */}
+        {!loading && results.length === 0 && query && (
+          <p className="text-center text-stone-400 font-serif italic mt-10">
+            No entries found in the Ledger matching your search.
+          </p>
+        )}
       </div>
     </div>
   );
