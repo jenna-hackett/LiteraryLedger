@@ -11,7 +11,7 @@ export default function NavBar() {
   
   const navLinks = [
     { name: "Your Archive", href: "/home" },
-    { name: "Search Stacks", href: "/search" },
+    { name: "Search Ledger", href: "/search" },
   ];
 
   return (

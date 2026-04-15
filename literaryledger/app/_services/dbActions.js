@@ -1,8 +1,31 @@
-import { collection, query, where, getDocs, limit, doc, updateDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, limit, doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { db } from "../utils/firebase";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const storage = getStorage();
+
+export const updateBookStatus = async (userId, bookData, status) => {
+  try {
+    const userRef = doc(db, "users", userId);
+    
+    await updateDoc(userRef, {
+      [`library.${bookData.id}`]: {
+        id: bookData.id,
+        title: bookData.volumeInfo.title,
+        authors: bookData.volumeInfo.authors || ["Unknown Author"],
+        thumbnail: bookData.volumeInfo.imageLinks?.thumbnail || "",
+        status: status, // 'reading', 'read', or 'want-to-read'
+        updatedAt: new Date().toISOString()
+      }
+    });
+    
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating book status:", error);
+    return { success: false, error: error.message };
+  }
+};
+
 export const uploadProfilePicture = async (userId, file) => {
   try {
     // Create a path in the storage vault
