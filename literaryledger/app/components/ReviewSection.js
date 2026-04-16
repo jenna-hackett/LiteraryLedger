@@ -65,7 +65,7 @@ export default function ReviewSection({ bookId, user, profileData, bookTitle, bo
       {/* HEADER & STATS */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-8">
         <h3 className="font-serif text-3xl text-emerald-900 font-bold uppercase tracking-widest">
-          The Public Archive
+          The Public Ledger
         </h3>
         <div className="bg-white/90 px-8 py-4 rounded-full border border-stone-300 shadow-md flex items-center gap-6 min-w-fit">
           <div className="flex flex-col items-center leading-none">
@@ -141,7 +141,7 @@ export default function ReviewSection({ bookId, user, profileData, bookTitle, bo
               <div className="flex items-center gap-4">
                 <ScribeAvatar photoURL={profileData?.photoURL} name={profileData?.firstName} size="small" />
                 <div>
-                  <h4 className="font-serif font-bold text-emerald-900 uppercase tracking-[0.2em] text-xs">Your Public Entry</h4>
+                  <h4 className="font-serif font-bold text-emerald-900 uppercase tracking-[0.2em] text-xs">Your Entry</h4>
                   <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mt-0.5">By {profileData?.firstName} {profileData?.lastName}</p>
                 </div>
               </div>

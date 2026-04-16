@@ -103,7 +103,7 @@ export default function BookDetailsPage() {
             </div>
             
             <div className="flex flex-col gap-3 w-full">
-              <p className="text-[10px] uppercase tracking-widest text-stone-400 font-bold mb-1">Update Ledger Status</p>
+              <p className="text-[10px] uppercase tracking-widest text-stone-400 font-bold mb-1">Update Archive Status</p>
               
               <button 
                 onClick={() => handleStatusUpdate('want-to-read')}
