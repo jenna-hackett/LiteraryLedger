@@ -1,11 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { getCircleActivity } from "../_services/dbActions";
 import ScribeAvatar from "../components/ScribeAvatar";
 
 export default function SocialFeed({ profileData }) {
   const [circleActivity, setCircleActivity] = useState([]);
-  const [activeReview, setActiveReview] = useState(null); // Tracks the modal state
+  const [activeReview, setActiveReview] = useState(null);
 
   useEffect(() => {
     async function loadActivity() {
@@ -27,20 +28,26 @@ export default function SocialFeed({ profileData }) {
         <div className="space-y-10">
           {circleActivity.map((activity, index) => {
             const isReviewed = activity.status === 'reviewed';
+            // Assuming activity object has a userId or scribeId field from dbActions
+            const profileLink = `/profile/${activity.userId}`;
             
             return (
               <div key={index} className="flex gap-5 border-b border-stone-100 pb-8 last:border-0 items-start">
-                <ScribeAvatar 
-                  photoURL={activity.scribePhoto} 
-                  name={activity.scribeName} 
-                  size="small" 
-                />
+                {/* 1. Clickable Avatar */}
+                <Link href={profileLink} className="transition-transform hover:scale-110 active:scale-95">
+                  <ScribeAvatar 
+                    photoURL={activity.scribePhoto} 
+                    name={activity.scribeName} 
+                    size="small" 
+                  />
+                </Link>
                 
                 <div className="flex flex-col gap-1">
                   <p className="text-base font-serif leading-relaxed text-stone-800">
-                    <span className="font-bold text-emerald-900">
+                    {/* 2. Clickable Name */}
+                    <Link href={profileLink} className="font-bold text-emerald-900 hover:underline decoration-emerald-900/30 underline-offset-4">
                       {activity.scribeName}
-                    </span> 
+                    </Link> 
                     <span className="text-stone-500"> 
                       {isReviewed ? " recently reviewed " : " recently marked "} 
                     </span>
@@ -98,11 +105,16 @@ export default function SocialFeed({ profileData }) {
             </button>
 
             <div className="flex items-center gap-4 mb-8">
-              <ScribeAvatar photoURL={activeReview.scribePhoto} name={activeReview.scribeName} size="small" />
+              {/* Also clickable inside the modal! */}
+              <Link href={`/profile/${activeReview.userId}`}>
+                <ScribeAvatar photoURL={activeReview.scribePhoto} name={activeReview.scribeName} size="small" />
+              </Link>
               <div>
-                <h4 className="font-serif font-bold text-emerald-900 text-xl leading-none">
-                  {activeReview.scribeName}
-                </h4>
+                <Link href={`/profile/${activeReview.userId}`} className="hover:underline decoration-emerald-900/30">
+                  <h4 className="font-serif font-bold text-emerald-900 text-xl leading-none">
+                    {activeReview.scribeName}
+                  </h4>
+                </Link>
                 <p className="text-[10px] uppercase tracking-widest text-stone-400 font-bold mt-1">Scribe Review</p>
               </div>
             </div>

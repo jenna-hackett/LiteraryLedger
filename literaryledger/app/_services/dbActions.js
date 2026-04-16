@@ -23,7 +23,6 @@ export const saveReview = async (userId, bookId, reviewData) => {
       updatedAt: serverTimestamp(),
     }, { merge: true });
 
-    // Update the specific book in the user's library to 'reviewed'
     await updateDoc(userRef, {
       [`library.${bookId}.status`]: 'reviewed',
       [`library.${bookId}.rating`]: reviewData.rating,
@@ -86,9 +85,12 @@ export const getCircleActivity = async (followingIds) => {
 
     querySnapshot.docs.forEach(doc => {
       const userData = doc.data();
+      const scribeId = doc.id; // Capture the Firestore Document ID (the User's UID)
+
       if (userData.library) {
         Object.values(userData.library).forEach(book => {
           activity.push({
+            userId: scribeId,
             scribeName: `${userData.firstName} ${userData.lastName}`,
             scribePhoto: userData.photoURL,
             ...book 
@@ -97,6 +99,7 @@ export const getCircleActivity = async (followingIds) => {
       }
     });
 
+    // Sort by most recently updated and limit to 10 entries
     return activity.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).slice(0, 10);
   } catch (error) {
     console.error("Error fetching circle activity:", error);
