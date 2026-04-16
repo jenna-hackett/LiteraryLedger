@@ -110,7 +110,7 @@ export default function BookDetailsPage() {
                 disabled={isAdding}
                 className={`w-full py-3 border border-emerald-900/30 text-emerald-900 text-[10px] uppercase tracking-widest font-bold rounded transition-all ${userBookData?.status === 'want-to-read' ? 'bg-emerald-900 text-white' : 'hover:bg-emerald-900/5'}`}
               >
-                Want to Read
+                Future Volume
               </button>
 
               <button 
@@ -126,7 +126,7 @@ export default function BookDetailsPage() {
                 disabled={isAdding}
                 className={`w-full py-4 bg-emerald-900 text-white text-[10px] uppercase tracking-widest font-bold rounded hover:bg-emerald-800 transition-all shadow-md disabled:opacity-50`}
               >
-                {isAdding ? "Updating Archive..." : userBookData?.status === 'read' ? "✓ Finished Volume" : "Mark as Finished"}
+                {isAdding ? "Updating Archive..." : userBookData?.status === 'read' ? "✓ Finished Volume" : "Mark Volume as Finished"}
               </button>
             </div>
           </div>
