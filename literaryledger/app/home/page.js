@@ -42,12 +42,18 @@ export default function Home() {
     if (!authLoading && user) fetchProfile();
   }, [user, authLoading]);
 
-  // --- Archive Calculations ---
+  // --- Archive & Stat Calculations ---
   const libraryArray = profileData?.library ? Object.values(profileData.library) : [];
   
   const currentlyReading = libraryArray.filter(book => book.status === 'reading');
   const wantToRead = libraryArray.filter(book => book.status === 'want-to-read');
-  const finishedBooks = libraryArray.filter(book => book.status === 'read');
+  
+  // Includes both standard finished and reviewed books
+  const finishedBooks = libraryArray.filter(book => 
+    book.status === 'read' || book.status === 'reviewed'
+  );
+
+  const reviewCount = libraryArray.filter(book => book.status === 'reviewed').length;
   
   const totalVolumes = finishedBooks.length;
   const followingCount = profileData?.following?.length || 0;
@@ -105,7 +111,7 @@ export default function Home() {
             <section>
               <h3 className="text-xs uppercase tracking-[0.3em] text-stone-400 font-bold mb-6 border-b border-stone-200 pb-2">Completed Volumes</h3>
               {finishedBooks.length > 0 ? (
-                <div className="grid grid-cols-3 gap-6 grayscale-[0.5]">
+                <div className="grid grid-cols-3 gap-6 grayscale-[0.3]">
                   {finishedBooks.map((book) => <BookCard key={book.id} book={book} small />)}
                 </div>
               ) : (
@@ -127,6 +133,13 @@ export default function Home() {
                   <span className="text-stone-600">Total Volumes</span>
                   <span className="font-bold text-emerald-900">{totalVolumes}</span>
                 </div>
+                
+                {/* Reviews Stat */}
+                <div className="flex justify-between border-b border-stone-300/30 pb-3">
+                  <span className="text-stone-600">Inked Reviews</span>
+                  <span className="font-bold text-emerald-900">{reviewCount}</span>
+                </div>
+
                 <div className="flex justify-between border-b border-stone-300/30 pb-3">
                   <span className="text-stone-600">Scribes in Circle</span>
                   <span className="font-bold text-emerald-900">{followingCount}</span>
