@@ -2,18 +2,51 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getBookDetails } from "../../_services/openLibrary";
-import { updateBookStatus } from "../../_services/dbActions"; // Updated import
+import { updateBookStatus } from "../../_services/dbActions"; 
 import { useUserAuth } from "../../contexts/AuthContext";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../utils/firebase";
+
+// --- Components ---
+import ReviewSection from "../../components/ReviewSection";
 
 export default function BookDetailsPage() {
   const { id } = useParams();
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [profileData, setProfileData] = useState(null);
+  const [userBookData, setUserBookData] = useState(null);
+  const [isAdding, setIsAdding] = useState(false);
+  
   const router = useRouter();
   const { user } = useUserAuth();
-  const [isAdding, setIsAdding] = useState(false);
 
-  // Handler for updating status (Read, Reading, Want to Read)
+  // Fetch Book Details & User Profile
+  useEffect(() => {
+    async function loadInitialData() {
+      const details = await getBookDetails(id);
+      setBook(details);
+
+      if (user?.uid) {
+        // Fetch User Profile (for their name/photo in reviews)
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          const data = userSnap.data();
+          setProfileData(data);
+          
+          // Check if this book is already in their library to get the status
+          if (data.library && data.library[id]) {
+            setUserBookData(data.library[id]);
+          }
+        }
+      }
+      setLoading(false);
+    }
+    loadInitialData();
+  }, [id, user]);
+
+  // Handler for updating status
   const handleStatusUpdate = async (selectedStatus) => {
     if (!user) {
       alert("You must be logged in to save books!");
@@ -21,8 +54,6 @@ export default function BookDetailsPage() {
     }
 
     setIsAdding(true);
-    
-    // Formatting the data for Firestore
     const bookToSave = {
       id: id,
       volumeInfo: {
@@ -35,23 +66,13 @@ export default function BookDetailsPage() {
     const result = await updateBookStatus(user.uid, bookToSave, selectedStatus);
     
     if (result.success) {
-      alert(`"${book.title}" is now marked as ${selectedStatus.replace(/-/g, ' ')} in your archive!`);
-    } else {
-      alert("The librarian encountered an error: " + result.error);
+      setUserBookData({ ...userBookData, status: selectedStatus });
+      alert(`"${book.title}" is now marked as ${selectedStatus.replace(/-/g, ' ')}!`);
     }
     setIsAdding(false);
   };
 
-  useEffect(() => {
-    async function loadBook() {
-      const details = await getBookDetails(id);
-      setBook(details);
-      setLoading(false);
-    }
-    loadBook();
-  }, [id]);
-
-  if (loading) return <div className="p-20 text-center italic text-stone-500">Unlocking the ledger...</div>;
+  if (loading) return <div className="p-20 text-center italic text-stone-500 font-serif">Unlocking the ledger...</div>;
   if (!book) return <div className="p-20 text-center">Book not found in the ledger.</div>;
 
   return (
@@ -69,15 +90,11 @@ export default function BookDetailsPage() {
       <main className="max-w-6xl mx-auto px-6 pb-20">
         <div className="flex flex-col md:flex-row gap-16 items-start">
           
-          {/* Left Side: Cover Image & Status Actions */}
+          {/* Left Side: Cover & Actions */}
           <div className="w-full md:w-1/3 sticky top-10 flex flex-col gap-6">
-            <div className="bg-stone-800/5 p-1 rounded-sm shadow-sm">
+            <div className="bg-stone-800/5 p-1 rounded-sm shadow-sm border border-stone-200">
               {book.coverUrl ? (
-                <img 
-                  src={book.coverUrl} 
-                  alt={book.title} 
-                  className="w-full h-auto object-contain shadow-md" 
-                />
+                <img src={book.coverUrl} alt={book.title} className="w-full h-auto object-contain shadow-md" />
               ) : (
                 <div className="aspect-[3/4] flex items-center justify-center bg-stone-800/5 text-stone-500 font-serif italic border border-stone-300/30">
                   Image Missing
@@ -85,14 +102,13 @@ export default function BookDetailsPage() {
               )}
             </div>
             
-            {/* Categorized Buttons */}
             <div className="flex flex-col gap-3 w-full">
               <p className="text-[10px] uppercase tracking-widest text-stone-400 font-bold mb-1">Update Ledger Status</p>
               
               <button 
                 onClick={() => handleStatusUpdate('want-to-read')}
                 disabled={isAdding}
-                className="w-full py-3 border border-emerald-900/30 text-emerald-900 text-[10px] uppercase tracking-widest font-bold rounded hover:bg-emerald-900 hover:text-white transition-all disabled:opacity-50"
+                className={`w-full py-3 border border-emerald-900/30 text-emerald-900 text-[10px] uppercase tracking-widest font-bold rounded transition-all ${userBookData?.status === 'want-to-read' ? 'bg-emerald-900 text-white' : 'hover:bg-emerald-900/5'}`}
               >
                 Want to Read
               </button>
@@ -100,7 +116,7 @@ export default function BookDetailsPage() {
               <button 
                 onClick={() => handleStatusUpdate('reading')}
                 disabled={isAdding}
-                className="w-full py-3 bg-stone-200 text-stone-800 text-[10px] uppercase tracking-widest font-bold rounded hover:bg-stone-300 transition-all disabled:opacity-50"
+                className={`w-full py-3 bg-stone-200 text-stone-800 text-[10px] uppercase tracking-widest font-bold rounded transition-all ${userBookData?.status === 'reading' ? 'bg-stone-800 text-white' : 'hover:bg-stone-300'}`}
               >
                 Currently Reading
               </button>
@@ -108,14 +124,14 @@ export default function BookDetailsPage() {
               <button 
                 onClick={() => handleStatusUpdate('read')}
                 disabled={isAdding}
-                className="w-full py-4 bg-emerald-900 text-white text-[10px] uppercase tracking-widest font-bold rounded hover:bg-emerald-800 transition-all shadow-md disabled:opacity-50"
+                className={`w-full py-4 bg-emerald-900 text-white text-[10px] uppercase tracking-widest font-bold rounded hover:bg-emerald-800 transition-all shadow-md disabled:opacity-50`}
               >
-                {isAdding ? "Updating Archive..." : "Mark as Finished"}
+                {isAdding ? "Updating Archive..." : userBookData?.status === 'read' ? "✓ Finished Volume" : "Mark as Finished"}
               </button>
             </div>
           </div>
 
-          {/* Right Side: Description */}
+          {/* Right Side: Info & Synopsis */}
           <div className="w-full md:w-2/3 border-l border-stone-300/60 pl-0 md:pl-16">
             <header className="mb-10">
               <h1 className="text-5xl font-serif font-bold text-emerald-900 mb-2 leading-tight">
@@ -135,6 +151,15 @@ export default function BookDetailsPage() {
                 {book.description || "No synopsis available for this volume in the ledger archives."}
               </p>
             </section>
+
+            {/* --- REVIEW SECTION --- */}
+            <ReviewSection 
+              bookId={id}
+              user={user}
+              profileData={profileData}
+              bookTitle={book.title}
+              bookStatus={userBookData?.status}
+            />
           </div>
 
         </div>
