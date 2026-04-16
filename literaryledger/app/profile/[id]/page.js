@@ -62,7 +62,7 @@ export default function ScribeProfilePage() {
           <div className="flex gap-4">
             <div className="bg-white px-6 py-4 rounded-xl border border-stone-200 text-center">
               <span className="block text-2xl font-bold text-emerald-900">{reviewedBooks.length}</span>
-              <span className="text-[10px] uppercase tracking-widest text-stone-400 font-bold">Critiques</span>
+              <span className="text-[10px] uppercase tracking-widest text-stone-400 font-bold">Reviews</span>
             </div>
             <div className="bg-white px-6 py-4 rounded-xl border border-stone-200 text-center">
               <span className="block text-2xl font-bold text-emerald-900">{finished.length}</span>
